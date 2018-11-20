@@ -11,13 +11,14 @@ import datetime
 
 
 class S3Benchmark:
-    def __init__(self, bucket_name, max_concurrency=10, max_io_queue=100, random_data=True, clean=True):
+    def __init__(self, bucket_name, max_concurrency=10, max_io_queue=100, random_data=True, clean=True, debug=False):
         self.bucket_name = bucket_name
         self.local_tmp_file_list = []
         self.s3_tmp_file_list = []
         self.transfer_config = TransferConfig(max_concurrency=max_concurrency, max_io_queue=max_io_queue)
         self.random_data = random_data
         self.clean = clean
+        self.debug = debug
 
     def _generate_random_str(self, num):
         random_str = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(num)])
@@ -50,7 +51,8 @@ class S3Benchmark:
         print(' * Download  %.2f Mbps (%.4f [sec])' % (download_speed, download_time))
         
     def run(self, file_size_mb):
-        print('Testing %d MB:' % file_size_mb)
+        if self.debug:
+            print('Testing %d MB:' % file_size_mb)
 
         local_file_name = self._generate_random_str(8) + '_%dmb.tmp' % file_size_mb
         self.local_tmp_file_list.append(local_file_name)
@@ -61,7 +63,8 @@ class S3Benchmark:
         upload_time = self._measure_upload_speed(local_file_name)
         download_time = self._measure_download_speed(local_file_name)
 
-        self._print_result(file_size_mb / upload_time * 8, upload_time, file_size_mb / download_time * 8, download_time)
+        if self.debug:
+            self._print_result(file_size_mb / upload_time * 8, upload_time, file_size_mb / download_time * 8, download_time)
 
         if self.clean:
             self._clean()
@@ -69,7 +72,8 @@ class S3Benchmark:
         return upload_time, download_time
 
     def multi_run(self, num_threads, file_size_mb):
-        print('Testing %d MB x %d Process:' % (file_size_mb, num_threads))
+        if self.debug:
+            print('Testing %d MB x %d Process:' % (file_size_mb, num_threads))
 
         random_str = self._generate_random_str(8)
         for i in range(num_threads):
@@ -90,7 +94,8 @@ class S3Benchmark:
         download_time = time.time() - start
         pool.close()
         
-        self._print_result(file_size_mb * num_threads / upload_time * 8, upload_time, file_size_mb * num_threads  / download_time * 8, download_time)
+        if self.debug:
+            self._print_result(file_size_mb * num_threads / upload_time * 8, upload_time, file_size_mb * num_threads  / download_time * 8, download_time)
 
         if self.clean:
             self._clean()
