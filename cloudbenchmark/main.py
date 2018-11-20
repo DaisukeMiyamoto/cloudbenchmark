@@ -75,6 +75,7 @@ def main():
     parser.add_argument('--target-s3', dest='target_s3', help='S3 bucket for benchmark target')
     args = parser.parse_args()
 
+    print('[%s]' % args.jog)
     if args.job == 's3-throughput-small':
         if args.target_s3:
             result = s3_throughput(args.target_s3)
