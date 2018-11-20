@@ -2,8 +2,8 @@ import sys
 import datetime
 import argparse
 from tqdm import tqdm
-import s3benchmark
-import benchmarkrecorder
+from cloudbenchmark import s3benchmark
+from cloudbenchmark import benchmarkrecorder
 
 
 def s3_throughput(s3_bucket_name, trial=1, filesize_list=[32, 64], max_concurrency_list=[10], max_io_queue_list=[1000], num_process_list=[1], random_data=True):
