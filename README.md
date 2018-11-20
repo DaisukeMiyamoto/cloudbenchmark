@@ -5,11 +5,15 @@ Benchmark suite for cloud environment
 
 # install
 
-`$ sudo pip install cloudbenchmark`
+```
+$ sudo pip install cloudbenchmark
+```
 
 # usage
 
-`$ cloudbenchmark -j s3-throughput-small -b [RESULT_BUCKET]`
+```
+$ cloudbenchmark -j s3-throughput-small -b [RESULT_BUCKET]
+```
 
 ## job list
 
