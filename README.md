@@ -3,21 +3,37 @@ cloudbenchmark
 
 Benchmark suite for cloud environment
 
-# install
+# Supported benchmark targets
+
+- Amazon EC2: CPU, memory
+- Amazon S3: throughput
+
+# Prepare
+
+- install sysbench
+- set up aws credentials
+
+# Install
 
 ```
-$ sudo pip install cloudbenchmark
+$ sudo pip3 install cloudbenchmark
 ```
 
-# usage
+# Usage
 
 ```
-$ cloudbenchmark -j s3-throughput-small -b [RESULT_BUCKET]
+$ cloudbenchmark -j [JOB_TYPE] -s [JOB_SIZE] -b [RESULT_BUCKET]
 ```
 
 ## job list
 
-- `s3-throughput-small`
+- `s3-throughput`
   - `--target-s3 [TARGET_BUCKET]`
-- `s3-throughput-large`
-  - `--target-s3 [TARGET_BUCKET]`
+- `ec2-sysbench-cpu`
+- `ec2-sysbench-memory`
+
+## job size
+
+- `small`
+- `large`
+
