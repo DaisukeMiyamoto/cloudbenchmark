@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 template for CloudBenchmark"
+# TODO:
+# - VPC
+# - Key pair
+# - role for submit result
+# - AMI for many region
+
+Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: "SSH Key Pair Name"
+  EC2InstanceType:
+    Type: String
+    Default: "t2.micro"
+    Description: "Instance Type"
+    
+Resources:
+  EC2Instance: 
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: "ami-0a2de1c3b415889d2"
+      InstanceType: !Ref EC2InstanceType
+      KeyName: !Ref "KeyName"
+      SecurityGroups:
+      - !Ref SSHSecurityGroup
+      BlockDeviceMappings: 
+        - DeviceName: "/dev/sdm"
+          Ebs: 
+            VolumeType: "gp2"
+            DeleteOnTermination: "true"
+            VolumeSize: "100"
+      Tags:
+        - Key: "Name"
+          Value: "CloudBenchmarkTarget"
+
+  SSHSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      # VpcId: !Ref VpcId
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+
+Outputs:
+  InstanceID:
+    Value: !Ref EC2Instance
+  PublicIP:
+    Value: !GetAtt EC2Instance.PublicIp
