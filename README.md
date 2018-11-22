@@ -10,6 +10,7 @@ Benchmark suite for cloud environment
 
 # Prepare
 
+- install ansible
 - install sysbench
 - set up aws credentials
 

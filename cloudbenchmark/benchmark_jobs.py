@@ -89,24 +89,24 @@ def ec2_sysbench_cpu(condition_pattern, debug=False):
             command = 'sysbench --threads=%d cpu run' % (condition['num_threads'])
             if debug:
                 print(command)
-
             output = subprocess.check_output(command, shell=True)
-            score = 0
-            output_lines = output.decode().split()
-            for i, text in enumerate(output_lines):
-                if text == 'second:':
-                    score = float(output_lines[i+1])
-                    break
-    
-            recorder.add_record([
-                condition['trial'],
-                condition['num_threads'],
-                score,
-            ])
-
+            
         except:
             print('Error: sysbench is required')
             return False
+
+        score = 0
+        output_lines = output.decode().split()
+        for i, text in enumerate(output_lines):
+            if text == 'second:':
+                score = float(output_lines[i+1])
+                break
+
+        recorder.add_record([
+            condition['trial'],
+            condition['num_threads'],
+            score,
+        ])
 
         if debug:
             print('CPU score %f' % score)
@@ -132,24 +132,24 @@ def ec2_sysbench_memory(condition_pattern, debug=False):
             command = 'sysbench --threads=%d memory run' % (condition['num_threads'])
             if debug:
                 print(command)
-
             output = subprocess.check_output(command, shell=True)
-            score = 0
-            output_lines = output.decode().split()
-            for i, text in enumerate(output_lines):
-                if text == 'MiB':
-                    score = float(output_lines[i-1])
-                    break
-    
-            recorder.add_record([
-                condition['trial'],
-                condition['num_threads'],
-                score,
-            ])
-
+            
         except:
             print('Error: sysbench is required')
             return False
+
+        score = 0
+        output_lines = output.decode().split()
+        for i, text in enumerate(output_lines):
+            if text == 'MiB':
+                score = float(output_lines[i-1])
+                break
+
+        recorder.add_record([
+            condition['trial'],
+            condition['num_threads'],
+            score,
+        ])
 
         if debug:
             print('Memory score %f' % score)
