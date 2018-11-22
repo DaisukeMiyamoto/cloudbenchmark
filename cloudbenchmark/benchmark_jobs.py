@@ -91,10 +91,10 @@ def ec2_sysbench_cpu(condition_pattern, debug=False):
                 print(command)
             output = subprocess.check_output(command, shell=True)
             
-        except subprocess.CalledProcessedError as e:
+        except subprocess.CalledProcesseError as e:
             print('Error: sysbench is required')
             print(e.cmd)
-            print(e.output):
+            print(e.output)
             return False
 
         score = 0
@@ -136,10 +136,10 @@ def ec2_sysbench_memory(condition_pattern, debug=False):
                 print(command)
             output = subprocess.check_output(command, shell=True)
 
-        except subprocess.CalledProcessedError as e:
+        except subprocess.CalledProcessError as e:
             print('Error: sysbench is required')
             print(e.cmd)
-            print(e.output):
+            print(e.output)
             return False
 
         score = 0
