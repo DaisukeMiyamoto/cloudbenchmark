@@ -5,10 +5,12 @@ import json
 import subprocess
 import string
 import random
+import time
+from pprint import pprint
 
 
 class DeployManager():
-    def __init__(self, template_filename, stack_name='CloudBenchmarkStack', region='ap-northeast-1', random_stack_name=False, wait=False, show_progress=False):
+    def __init__(self, template_filename, stack_name='CloudBenchmarkStack', region='ap-northeast-1', random_stack_name=False, wait=False, show_stack_events=False):
         self.cfn_client = boto3.client('cloudformation', region_name=region)
         self.stack_name = stack_name
         if random_stack_name:
@@ -23,11 +25,26 @@ class DeployManager():
         )
 
         if wait:
-            self._use_waiter()
-            
+            if show_stack_events:
+                self._show_stack_events()
+            else:
+                self._use_waiter()
+
     def _get_random_str(self, n):
         random_str = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(n)])
         return random_str
+
+    def _show_stack_events(self):
+        while True:
+            time.sleep(5)
+            response = self.cfn_client.describe_stack_events(StackName=self.stack_name)
+            for event in response['StackEvents']:
+                print('------------------------------------------------')
+                pprint(event)
+            
+            response = self.cfn_client.describe_stacks(StackName=self.stack_name)
+            if response['Stacks'][0]['StackStatus'] != 'CREATE_IN_PROGRESS':
+                break
 
     def _use_waiter(self):
         waiter = self.cfn_client.get_waiter('stack_create_complete')
@@ -71,7 +88,7 @@ class AnsibleManager():
         try:
             command = 'ansible -i %s, all -m ping --private-key=%s -u ec2-user --ssh-common-args="-o StrictHostKeyChecking=no"' % (self.hostname, self.key)
             output = subprocess.check_output(command, shell=True)
-            print(str(output))
+            print(output.decode())
         except subprocess.CalledProcessError as e:
             print(e.cmd)
             print(e.output)
@@ -86,7 +103,7 @@ if __name__=='__main__':
         'KeyName': 'aws-daisuke-tokyo',
     }
 
-    deploymanager = DeployManager(template_filename='ec2.yaml', random_stack_name=True, wait=True)
+    deploymanager = DeployManager(template_filename='ec2.yaml', random_stack_name=True, wait=True, show_stack_events=True)
     target_ip = deploymanager.get_output('PublicIP')
     print(target_ip)
     
