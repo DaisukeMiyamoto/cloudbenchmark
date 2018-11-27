@@ -49,9 +49,32 @@ $ cloudbenchmark-manager -t [TEST-SET]
 
 ### test set
 
-- `test-cpu`: t2.micro
-- `all-cpu`: t2.micro, c3.large, c4.large, c5.large
+- `test-cpu`
+- `ec2-sysbench-cpu-small`
+- `ec2-sysbench-cpu-large`
+- `ec2-sysbench-memory-large`
 
+### large set instances
+
+- t2.large
+- t2.2xlarge
+- t3.large
+- t3.2xlarge
+- c3.large
+- c3.8xlarge
+- c4.large
+- c4.8xlarge
+- c5.large
+- c5.18xlarge
+- m3.2xlarge
+- m4.large
+- m4.16xlarge
+- m5.large
+- m5.24xlarge
+- r4.large
+- r4.16xlarge
+- r5.large
+- r5.24xlarge
 
 # Test
 

@@ -26,7 +26,6 @@ class DeployManager():
         self.ping_retry = 0
         self.ping_retry_max = 5
         self.show_stack_events = True
-        self.test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'))
     
     def run_remote_benchmark(self, instance_type, job_type, job_size):
         self.parameters = {
@@ -69,13 +68,14 @@ class DeployManager():
 
 def deploy_core(args):
     deploymanager = DeployManager(args['key_name'], args['local_key_path'], args['output_bucket_name'])
+    deploymanager.show_stack_events = False
     print('Benchmarking: %s [%s %s]' % (args['instance_type'], args['job_type'], args['job_size']))
     deploymanager.run_remote_benchmark(args['instance_type'], args['job_type'], args['job_size'])
 
 
 def main():
     print('Cloud Benchmark Manager')
-
+    test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'))
     parser = argparse.ArgumentParser(description='Cloud Benchmark Suite.')
     parser.add_argument('-t', '--test-set', dest='test_set', choices=test_set_list.keys(), help='test set name', required=True)
     parser.add_argument('-m', '--multi-process', dest='multi', help='use multi process', default=1)
@@ -99,7 +99,7 @@ def main():
         }
         deploy_list.append(deploy)
 
-    pool = multiprocessing.Pool(args.multi)
+    pool = multiprocessing.Pool(int(args.multi))
     pool.map(deploy_core, deploy_list)
     pool.close()
 

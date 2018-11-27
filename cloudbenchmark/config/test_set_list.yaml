@@ -9,8 +9,10 @@ ec2-sysbench-cpu-small:
     - c5.large
   job_size: small
   job_type: ec2-sysbench-cpu
-ec2-sysbench-cpu-all:
+ec2-sysbench-cpu-large:
   instance_type_list:
+    - t2.micro
+    - t2.medium
     - t2.large
     - t2.2xlarge
     - t3.large
@@ -32,8 +34,10 @@ ec2-sysbench-cpu-all:
     - r5.24xlarge
   job_size: flex
   job_type: ec2-sysbench-cpu
-ec2-sysbench-memory-all:
+ec2-sysbench-memory-large:
   instance_type_list:
+    - t2.micro
+    - t2.medium
     - t2.large
     - t2.2xlarge
     - t3.large
