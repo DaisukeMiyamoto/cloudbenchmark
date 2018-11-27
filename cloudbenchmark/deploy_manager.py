@@ -26,6 +26,7 @@ class DeployManager():
         self.ping_retry = 0
         self.ping_retry_max = 5
         self.show_stack_events = True
+        self.cfn_region = 'ap-northeast-1'
     
     def run_remote_benchmark(self, instance_type, job_type, job_size):
         self.parameters = {
@@ -45,7 +46,8 @@ class DeployManager():
                 parameters=self.parameters,
                 random_stack_name=True,
                 wait=True,
-                show_stack_events=self.show_stack_events
+                show_stack_events=self.show_stack_events,
+                region=self.cfn_region
             )
             target_ip = cfnmanager.get_output('PublicIP')
             time.sleep(5)
@@ -69,6 +71,7 @@ class DeployManager():
 def deploy_core(args):
     deploymanager = DeployManager(args['key_name'], args['local_key_path'], args['output_bucket_name'])
     deploymanager.show_stack_events = False
+    deploymanager.region = args['region']
     print('Benchmarking: %s [%s %s]' % (args['instance_type'], args['job_type'], args['job_size']))
     deploymanager.run_remote_benchmark(args['instance_type'], args['job_type'], args['job_size'])
 
@@ -79,6 +82,7 @@ def main():
     parser = argparse.ArgumentParser(description='Cloud Benchmark Suite.')
     parser.add_argument('-t', '--test-set', dest='test_set', choices=test_set_list.keys(), help='test set name', required=True)
     parser.add_argument('-m', '--multi-process', dest='multi', help='use multi process', default=1)
+    parser.add_argument('-r', '--region', dest='region', help='AWS region', default='us-west-2')
     args = parser.parse_args()
 
     # TODO: auto generate key-pair
@@ -95,7 +99,8 @@ def main():
             'job_size': test_set['job_size'],
             'key_name': key_name,
             'local_key_path': local_key_path,
-            'output_bucket_name': output_bucket_name
+            'output_bucket_name': output_bucket_name,
+            'region': args.region
         }
         deploy_list.append(deploy)
 
