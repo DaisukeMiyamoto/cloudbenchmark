@@ -3,7 +3,6 @@ Description: "EC2 template for CloudBenchmark"
 # TODO:
 # - VPC
 # - Key pair
-# - AMI for many region
 
 Parameters:
   KeyName:
