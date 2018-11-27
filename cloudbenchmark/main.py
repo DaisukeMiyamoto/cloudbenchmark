@@ -59,23 +59,10 @@ condition_patterns = {
     }
 }
 
-def convert_process_num(size_list):
-    result = []
-    for size in size_list:
-        if size == 'MAX':
-            result.append(multiprcessing.cpu_count())
-        elif size == 'HALF_MAX':
-            result.append(int(multiprcessing.cpu_count() / 2))
-        else
-            result.append(size)
-    
-    return result
-    
 
 def job_executer(job, size, bucket, name, options, debug=False):
 
     print('[%s]' % job)
-    size_converted = convert_process_num(size)
     result = None
     if 's3-throughput' in job:
         result = benchmark_jobs.s3_throughput(options['target_s3'], condition_patterns[job][size], debug=debug)

@@ -12,10 +12,10 @@ from cloudbenchmark import benchmarkrecorder
 
 def convert_process_num(num):
     if num == 'MAX':
-        return int(multiprcessing.cpu_count())
+        return int(multiprocessing.cpu_count())
     elif num == 'HALF_MAX':
-        return int(multiprcessing.cpu_count() / 2)
-    else
+        return int(multiprocessing.cpu_count() / 2)
+    else:
         return num
 
 
