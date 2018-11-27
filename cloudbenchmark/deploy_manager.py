@@ -2,15 +2,20 @@
 
 import boto3
 import json
+import os
+import sys
 import subprocess
 import string
 import random
 import time
-from pprint import pprint
+import pkgutil
+# from pprint import pprint
+import cloudbenchmark
+from blessings import Terminal
 
 
 class DeployManager():
-    def __init__(self, template_filename, stack_name='CloudBenchmarkStack', region='ap-northeast-1', random_stack_name=False, wait=False, show_stack_events=False):
+    def __init__(self, template_filename, parameters, stack_name='CloudBenchmarkStack', region='ap-northeast-1', random_stack_name=False, wait=False, show_stack_events=False):
         self.cfn_client = boto3.client('cloudformation', region_name=region)
         self.stack_name = stack_name
         if random_stack_name:
@@ -34,14 +39,32 @@ class DeployManager():
         random_str = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(n)])
         return random_str
 
-    def _show_stack_events(self):
+
+    def _show_stack_events(self, pooling_time=5):
+        last_id = 0
+        term = Terminal()
+
         while True:
-            time.sleep(5)
+            time.sleep(pooling_time)
             response = self.cfn_client.describe_stack_events(StackName=self.stack_name)
-            for event in response['StackEvents']:
-                print('------------------------------------------------')
-                pprint(event)
-            
+            event_list = list(reversed(response['StackEvents']))
+            for event in event_list[last_id:]:
+                if event['ResourceStatus'] == 'CREATE_IN_PROGRESS':
+                    pre_tcode = term.yellow
+                elif event['ResourceStatus'] == 'CREATE_COMPLETE':
+                    pre_tcode = term.green
+                else:
+                    pre_tcode = term.red
+                print('%s%s | %s | %s | %s%s' % (
+                    pre_tcode,
+                    event['LogicalResourceId'].ljust(30),
+                    event['ResourceType'].ljust(30),
+                    event['ResourceStatus'].ljust(20),
+                    event['Timestamp'],
+                    term.normal
+                ))
+            last_id = len(event_list)
+
             response = self.cfn_client.describe_stacks(StackName=self.stack_name)
             if response['Stacks'][0]['StackStatus'] != 'CREATE_IN_PROGRESS':
                 break
@@ -62,9 +85,12 @@ class DeployManager():
         return cfn_parameter_list
     
     def _read_template(self, filename):
-        with open(filename) as f:
-            template_body = f.read()
-        return template_body
+        d = os.path.dirname(sys.modules['cloudbenchmark'].__file__)
+        print(d)
+        template_body = pkgutil.get_data('cloudbenchmark', 'template/'+filename)
+        # with open(filename) as f:
+        #     template_body = f.read()
+        return template_body.decode()
 
     def get_output(self, key):
         value = None
@@ -96,20 +122,21 @@ class AnsibleManager():
     def run_playbook(self, playbook_name):
         pass
 
-
-if __name__=='__main__':
+def deploy_main(instance_type='t2.micro', key_name='aws-daisuke-tokyo', local_key_path='~/.ssh/aws-daisuke-tokyo.pem'):
     parameters = {
-        'EC2InstanceType': 't2.micro',
-        'KeyName': 'aws-daisuke-tokyo',
+        'EC2InstanceType': instance_type,
+        'KeyName': key_name,
     }
 
-    deploymanager = DeployManager(template_filename='ec2.yaml', random_stack_name=True, wait=True, show_stack_events=True)
+    deploymanager = DeployManager(template_filename='ec2.yaml', parameters=parameters, random_stack_name=True, wait=True, show_stack_events=True)
     target_ip = deploymanager.get_output('PublicIP')
-    print(target_ip)
+    # print(target_ip)
     
-    ansiblemanager = AnsibleManager(target_ip, '~/.ssh/aws-daisuke-tokyo.pem')
+    ansiblemanager = AnsibleManager(target_ip, local_key_path)
     ansiblemanager.ping()
 
     deploymanager.delete()
 
-    
+
+if __name__=='__main__':
+    deploy_main()
