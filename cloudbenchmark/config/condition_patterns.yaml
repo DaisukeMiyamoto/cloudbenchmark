@@ -1,0 +1,35 @@
+ec2-sysbench-cpu:
+  flex:
+    num_threads: [1, HALF_MAX, MAX]
+    trial: [0, 1, 2]
+  large:
+    num_threads: [1, 2, 4, 8, 16, 32]
+    trial: [0, 1, 2]
+  small:
+    num_threads: [1, 2]
+    trial: [0]
+ec2-sysbench-memory:
+  flex:
+    num_threads: [1, HALF_MAX, MAX]
+    trial: [0, 1, 2]
+  large:
+    num_threads: [1, 2, 4, 8, 16, 32]
+    trial: [0, 1, 2]
+  small:
+    num_threads: [1, 2]
+    trial: [0]
+s3-throughput:
+  large:
+    file_size: [32, 64, 128, 256, 512, 1024, 2048, 4096]
+    max_concurrency: [10, 100]
+    max_io_queue: [1000, 10000]
+    num_process: [1, 2, 4, 8, 16, 32]
+    random_data: [true]
+    trial: [0, 1, 2]
+  small:
+    file_size: [64, 256, 1024]
+    max_concurrency: [10]
+    max_io_queue: [1000]
+    num_process: [1]
+    random_data: [true]
+    trial: [0]

@@ -28,6 +28,7 @@ class AnsibleManager():
         except subprocess.CalledProcessError as e:
             print(e.cmd)
             print(e.output.decode())
+            return output_str
         
     def ping(self):
         command = 'ansible -i %s, all -m ping --private-key=%s -u ec2-user --ssh-common-args="-o StrictHostKeyChecking=no"' % (self.hostname, self.key)

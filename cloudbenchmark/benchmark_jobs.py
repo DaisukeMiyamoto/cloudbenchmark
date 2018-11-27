@@ -11,12 +11,18 @@ from cloudbenchmark import benchmarkrecorder
 
 
 def convert_process_num(num):
+    print(num)
     if num == 'MAX':
-        return int(multiprocessing.cpu_count())
+        result = int(multiprocessing.cpu_count())
     elif num == 'HALF_MAX':
-        return int(multiprocessing.cpu_count() / 2)
+        result = int(multiprocessing.cpu_count() / 2)
     else:
-        return num
+        result = num
+    
+    if result >= 1:
+        return result
+    else:
+        return 1
 
 
 def s3_throughput(s3_bucket_name, condition_pattern, clean=True, debug=False):
@@ -101,7 +107,7 @@ def ec2_sysbench_cpu(condition_pattern, debug=False):
                 print(command)
             output = subprocess.check_output(command, shell=True)
             
-        except subprocess.CalledProcesseError as e:
+        except subprocess.CalledProcessError as e:
             print('Error: sysbench is required')
             print(e.cmd)
             print(e.output)

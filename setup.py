@@ -10,10 +10,10 @@ if os.path.exists('README.txt'):
 
 setup(
     name='cloudbenchmark',
-    version='0.1.12',
+    version='0.1.15',
     packages=['cloudbenchmark'],
     package_dir={'cloudbenchmark': 'cloudbenchmark'},
-    package_data={'cloudbenchmark': ['template/*.yaml', 'playbook/*.yaml']},
+    package_data={'cloudbenchmark': ['template/*.yaml', 'playbook/*.yaml', 'config/*.yaml']},
     description=description,
     long_description=long_description,
     author='Daisuke Miyamoto',

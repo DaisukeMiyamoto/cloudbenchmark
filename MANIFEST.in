@@ -2,3 +2,4 @@ include README.md
 include LICENSE
 recursive-include cloudbenchmark/playbook *.yaml
 recursive-include cloudbenchmark/template *.yaml
+recursive-include cloudbenchmark/config *.yaml

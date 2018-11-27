@@ -6,63 +6,16 @@ import datetime
 import argparse
 import json
 import multiprocessing
+import yaml
+import pkgutil
 from cloudbenchmark import benchmark_jobs
 from cloudbenchmark import utils
-
-
-condition_patterns = {
-    's3-throughput': {
-        'small': {
-            'trial': [0],
-            'file_size': [64, 256, 1024],
-            'max_concurrency': [10],
-            'max_io_queue': [1000],
-            'num_process': [1],
-            'random_data': [True],
-        },
-        'large': {
-            'trial': [0, 1, 2],
-            'file_size': [32, 64, 128, 256, 512, 1024, 2048, 4096],
-            'max_concurrency': [10, 100],
-            'max_io_queue': [1000, 10000],
-            'num_process': [1, 2, 4, 8, 16, 32],
-            'random_data': [True],
-        }
-    },
-    'ec2-sysbench-cpu': {
-        'small': {
-            'trial': [0],
-            'num_threads': [1, 2],
-        },
-        'large': {
-            'trial': [0, 1, 2],
-            'num_threads': [1, 2, 4, 8, 16, 32],
-        },
-        'flex': {
-            'trial': [0, 1, 2],
-            'num_threads': [1, 'HALF_MAX', 'MAX']
-        }
-    },
-    'ec2-sysbench-memory': {
-        'small': {
-            'trial': [0],
-            'num_threads': [1, 2],
-        },
-        'large': {
-            'trial': [0, 1, 2],
-            'num_threads': [1, 2, 4, 8, 16, 32],
-        },
-        'flex': {
-            'trial': [0, 1, 2],
-            'num_threads': [1, 'HALF_MAX', 'MAX']
-        }
-    }
-}
 
 
 def job_executer(job, size, bucket, name, options, debug=False):
 
     print('[%s]' % job)
+    condition_patterns = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/condition_patterns.yaml'))
     result = None
     if 's3-throughput' in job:
         result = benchmark_jobs.s3_throughput(options['target_s3'], condition_patterns[job][size], debug=debug)

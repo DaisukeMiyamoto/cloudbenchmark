@@ -77,7 +77,6 @@ class CloudFormationManager():
         return cfn_parameter_list
     
     def _read_template(self, filename):
-        d = os.path.dirname(sys.modules['cloudbenchmark'].__file__)
         template_body = pkgutil.get_data('cloudbenchmark', 'template/'+filename)
         return template_body.decode()
 

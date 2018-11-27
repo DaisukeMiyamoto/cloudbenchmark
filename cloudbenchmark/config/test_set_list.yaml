@@ -1,0 +1,57 @@
+test-cpu:
+  instance_type_list:
+    - t2.micro
+  job_size: small
+  job_type: ec2-sysbench-cpu
+ec2-sysbench-cpu-small:
+  instance_type_list:
+    - t2.micro
+    - c5.large
+  job_size: small
+  job_type: ec2-sysbench-cpu
+ec2-sysbench-cpu-all:
+  instance_type_list:
+    - t2.large
+    - t2.2xlarge
+    - t3.large
+    - t3.2xlarge
+    - c3.large
+    - c3.8xlarge
+    - c4.large
+    - c4.8xlarge
+    - c5.large
+    - c5.18xlarge
+    - m3.2xlarge
+    - m4.large
+    - m4.16xlarge
+    - m5.large
+    - m5.24xlarge
+    - r4.large
+    - r4.16xlarge
+    - r5.large
+    - r5.24xlarge
+  job_size: flex
+  job_type: ec2-sysbench-cpu
+ec2-sysbench-memory-all:
+  instance_type_list:
+    - t2.large
+    - t2.2xlarge
+    - t3.large
+    - t3.2xlarge
+    - c3.large
+    - c3.8xlarge
+    - c4.large
+    - c4.8xlarge
+    - c5.large
+    - c5.18xlarge
+    - m3.2xlarge
+    - m4.large
+    - m4.16xlarge
+    - m5.large
+    - m5.24xlarge
+    - r4.large
+    - r4.16xlarge
+    - r5.large
+    - r5.24xlarge
+  job_size: flex
+  job_type: ec2-sysbench-memory
