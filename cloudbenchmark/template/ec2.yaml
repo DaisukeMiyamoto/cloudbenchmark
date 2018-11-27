@@ -16,12 +16,22 @@ Parameters:
   OutputS3:
     Type: String
     Description: "output target S3 bucket"
-    
+
+Mappings:
+  AmazonLinux2AMI:
+    ap-northeast-1:
+      "x86": "ami-0a2de1c3b415889d2"
+    ap-southeast-1:
+      "x86": "ami-0b84d2c53ad5250c2"
+    us-west-2:
+      "x86": "ami-01bbe152bf19d0289"
+      "arm": "ami-0f374ff3bc5bb0929"
+
 Resources:
   EC2Instance: 
     Type: AWS::EC2::Instance
     Properties: 
-      ImageId: "ami-0a2de1c3b415889d2"
+      ImageId: !FindInMap [AmazonLinux2AMI, !Ref "AWS::Region", "x86"]
       InstanceType: !Ref EC2InstanceType
       KeyName: !Ref "KeyName"
       SecurityGroups:
