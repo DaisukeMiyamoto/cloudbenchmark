@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: install base software
+    yum:
+      name:
+        - git
+        - python3-pip
+        - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      state: latest
+
+  - name: update
+    yum:
+      name: '*'
+      state: latest
+
+  - name: install benchmark software
+    yum:
+      name:
+        - sysbench
+      state: latest
+      enablerepo: epel
+
+  - name: install cloudbenchmark
+    pip:
+      name:
+        - cloudbenchmark
+      executable: pip3

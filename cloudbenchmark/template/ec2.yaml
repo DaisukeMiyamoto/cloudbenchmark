@@ -3,7 +3,6 @@ Description: "EC2 template for CloudBenchmark"
 # TODO:
 # - VPC
 # - Key pair
-# - role for submit result
 # - AMI for many region
 
 Parameters:
@@ -14,6 +13,9 @@ Parameters:
     Type: String
     Default: "t2.micro"
     Description: "Instance Type"
+  OutputS3:
+    Type: String
+    Description: "output target S3 bucket"
     
 Resources:
   EC2Instance: 
@@ -24,6 +26,7 @@ Resources:
       KeyName: !Ref "KeyName"
       SecurityGroups:
       - !Ref SSHSecurityGroup
+      IamInstanceProfile: !Ref EC2Profile
       BlockDeviceMappings: 
         - DeviceName: "/dev/sdm"
           Ebs: 
@@ -44,6 +47,37 @@ Resources:
         FromPort: 22
         IpProtocol: tcp
         ToPort: 22
+        
+  EC2Profile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+        - Ref: EC2Role
+        
+  EC2Role:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "ec2.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: "target-s3-write"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "s3:*"
+                Resource:
+                  - !Sub "arn:aws:s3:::${OutputS3}"
+                  - !Sub "arn:aws:s3:::${OutputS3}/*"
 
 Outputs:
   InstanceID:

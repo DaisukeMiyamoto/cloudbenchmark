@@ -8,25 +8,26 @@ import subprocess
 import string
 import random
 import time
+import argparse
 import pkgutil
-# from pprint import pprint
 import cloudbenchmark
 from blessings import Terminal
+from cloudbenchmark import utils
 
 
-class DeployManager():
+class CloudFormationManager():
     def __init__(self, template_filename, parameters, stack_name='CloudBenchmarkStack', region='ap-northeast-1', random_stack_name=False, wait=False, show_stack_events=False):
         self.cfn_client = boto3.client('cloudformation', region_name=region)
         self.stack_name = stack_name
         if random_stack_name:
-            self.stack_name += ('-%s' % self._get_random_str(10))
+            self.stack_name += ('-%s' % utils.get_random_str(10))
         
         template_body = self._read_template(template_filename)
         response = self.cfn_client.create_stack(
             StackName = self.stack_name,
             TemplateBody = template_body,
             Parameters = self._convert_parameter_dict(parameters),
-            # Capabilities = 'CAPABILITY_NAMED_IAM',
+            Capabilities = ['CAPABILITY_NAMED_IAM'],
         )
 
         if wait:
@@ -34,11 +35,6 @@ class DeployManager():
                 self._show_stack_events()
             else:
                 self._use_waiter()
-
-    def _get_random_str(self, n):
-        random_str = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(n)])
-        return random_str
-
 
     def _show_stack_events(self, pooling_time=5):
         last_id = 0
@@ -86,7 +82,6 @@ class DeployManager():
     
     def _read_template(self, filename):
         d = os.path.dirname(sys.modules['cloudbenchmark'].__file__)
-        print(d)
         template_body = pkgutil.get_data('cloudbenchmark', 'template/'+filename)
         # with open(filename) as f:
         #     template_body = f.read()
@@ -106,37 +101,117 @@ class DeployManager():
 
 
 class AnsibleManager():
-    def __init__(self, hostname, key):
+    def __init__(self, hostname, key, debug=False):
         self.hostname = hostname
         self.key = key
-        
-    def ping(self):
+        self.debug = debug
+    
+    def _run_local_command(self, command):
         try:
-            command = 'ansible -i %s, all -m ping --private-key=%s -u ec2-user --ssh-common-args="-o StrictHostKeyChecking=no"' % (self.hostname, self.key)
             output = subprocess.check_output(command, shell=True)
-            print(output.decode())
+            output_str = output.decode()
+            if self.debug:
+                print(output_str)
+            return output_str
         except subprocess.CalledProcessError as e:
             print(e.cmd)
-            print(e.output)
+            print(e.output.decode())
+        
+    def ping(self):
+        command = 'ansible -i %s, all -m ping --private-key=%s -u ec2-user --ssh-common-args="-o StrictHostKeyChecking=no"' % (self.hostname, self.key)
+        result = self._run_local_command(command)
+        if 'pong' in result:
+            return True
+        else:
+            return False
 
-    def run_playbook(self, playbook_name):
-        pass
+    def run_playbook(self, playbook_filename):
+        command = 'ansible-playbook -i %s, --private-key=%s -u ec2-user --ssh-common-args="-o StrictHostKeyChecking=no" %s' % (self.hostname, self.key, playbook_filename)
+        return self._run_local_command(command)
+        
+    def run_command(self, command):
+        command = 'ansible -i %s, all --private-key=%s -u ec2-user --ssh-common-args="-o StrictHostKeyChecking=no" -a "%s"' % (self.hostname, self.key, command)
+        return self._run_local_command(command)
 
-def deploy_main(instance_type='t2.micro', key_name='aws-daisuke-tokyo', local_key_path='~/.ssh/aws-daisuke-tokyo.pem'):
-    parameters = {
-        'EC2InstanceType': instance_type,
-        'KeyName': key_name,
-    }
 
-    deploymanager = DeployManager(template_filename='ec2.yaml', parameters=parameters, random_stack_name=True, wait=True, show_stack_events=True)
-    target_ip = deploymanager.get_output('PublicIP')
-    # print(target_ip)
+class DeployManager():
+    def __init__(self, key_name, local_key_path, output_bucket_name):
+        self.template_filename = 'ec2.yaml'
+        self.key_name = key_name
+        self.local_key_path = local_key_path
+        self.playbook_filename = str(cloudbenchmark.__path__[0]) + '/playbook/install.yaml'
+        self.output_bucket_name = output_bucket_name
+        self.ping_retry = 0
+        self.ping_retry_max = 5
     
-    ansiblemanager = AnsibleManager(target_ip, local_key_path)
-    ansiblemanager.ping()
+    def run_remote_benchmark(self, instance_type, job_type, job_size):
+        self.parameters = {
+            'EC2InstanceType': instance_type,
+            'KeyName': self.key_name,
+            'OutputS3': self.output_bucket_name
+        }
+        self.benchmark_command = '/usr/local/bin/cloudbenchmark -j %s -s %s -b %s' % (
+            job_type,
+            job_size,
+            self.output_bucket_name
+        )
 
-    deploymanager.delete()
+        try:
+            cfnmanager = CloudFormationManager(
+                template_filename=self.template_filename,
+                parameters=self.parameters,
+                random_stack_name=True,
+                wait=True,
+                show_stack_events=True
+            )
+            target_ip = cfnmanager.get_output('PublicIP')
+            time.sleep(5)
+            ansiblemanager = AnsibleManager(target_ip, self.local_key_path)
+            
+            while True:
+                if ansiblemanager.ping():
+                    break
+                print('Warning: ping retry')
+                time.sleep(5)
+                
+            ansiblemanager.run_playbook(playbook_filename=self.playbook_filename)
+            ansiblemanager.run_command(self.benchmark_command)
+    
+        except Exception as e:
+            print(e)
+        finally:
+            cfnmanager.delete()
+
+
+def main():
+    print('Cloud Benchmark Manager')
+    test_set_list = {
+        'test_cpu': {
+            'instance_type_list': ['t2.micro'],
+            'job_type': 'ec2-sysbench-cpu',
+            'job_size': 'small'
+        },
+        'all_cpu': {
+            'instance_type_list': ['t2.micro', 'c3.large', 'c4.large', 'c5.large'],
+            'job_type': 'ec2-sysbench-cpu',
+            'job_size': 'small'
+        }
+    }
+    parser = argparse.ArgumentParser(description='Cloud Benchmark Suite.')
+    parser.add_argument('-t', '--test-set', dest='test_set', choices=test_set_list.keys(), help='test set name', required=True)
+    args = parser.parse_args()
+
+    # TODO: auto generate key-pair
+    deploymanager = DeployManager(key_name='aws-daisuke-tokyo',
+        local_key_path='~/.ssh/aws-daisuke-tokyo.pem',
+        output_bucket_name='midaisuk-benchmarks'
+    )
+
+    test_set = test_set_list[args.test_set]
+    for instance_type in test_set['instance_type_list']:
+        print('Benchmarking: %s [%s %s]' % (instance_type, test_set['job_type'], test_set['job_size']))
+        deploymanager.run_remote_benchmark(instance_type, test_set['job_type'], test_set['job_size'])
 
 
 if __name__=='__main__':
-    deploy_main()
+    main()

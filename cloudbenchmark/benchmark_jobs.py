@@ -5,8 +5,18 @@ import datetime
 import json
 from tqdm import tqdm
 import subprocess
+import multiprocessing
 from cloudbenchmark import s3benchmark
 from cloudbenchmark import benchmarkrecorder
+
+
+def convert_process_num(num):
+    if num == 'MAX':
+        return int(multiprcessing.cpu_count())
+    elif num == 'HALF_MAX':
+        return int(multiprcessing.cpu_count() / 2)
+    else
+        return num
 
 
 def s3_throughput(s3_bucket_name, condition_pattern, clean=True, debug=False):
@@ -81,7 +91,7 @@ def ec2_sysbench_cpu(condition_pattern, debug=False):
     condition_list = []
     for num_threads in condition_pattern['num_threads']:
         for trial in condition_pattern['trial']:
-            condition = {'num_threads': num_threads, 'trial': trial}
+            condition = {'num_threads': convert_process_num(num_threads), 'trial': trial}
             condition_list.append(condition)
 
     for condition in tqdm(condition_list):
@@ -126,7 +136,7 @@ def ec2_sysbench_memory(condition_pattern, debug=False):
     condition_list = []
     for num_threads in condition_pattern['num_threads']:
         for trial in condition_pattern['trial']:
-            condition = {'num_threads': num_threads, 'trial': trial}
+            condition = {'num_threads': convert_process_num(num_threads), 'trial': trial}
             condition_list.append(condition)
 
     for condition in tqdm(condition_list):

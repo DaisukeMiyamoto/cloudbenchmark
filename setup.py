@@ -10,7 +10,7 @@ if os.path.exists('README.txt'):
 
 setup(
     name='cloudbenchmark',
-    version='0.1.8',
+    version='0.1.11',
     packages=['cloudbenchmark'],
     package_dir={'cloudbenchmark': 'cloudbenchmark'},
     package_data={'cloudbenchmark': ['template/*.yaml', 'playbook/*.yaml']},
@@ -19,7 +19,7 @@ setup(
     author='Daisuke Miyamoto',
     author_email='midaisuk@gmail.com',
     url='https://github.com/DaisukeMiyamoto/cloudbenchmark',
-    install_requires=['numpy', 'tqdm', 'pandas', 'requests', 'blessings'],
+    install_requires=['boto3', 'numpy', 'tqdm', 'pandas', 'requests', 'blessings'],
     keywords=['aws', 'cloud', 'benchmark', 'performance', 'flops'],
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
@@ -36,7 +36,7 @@ setup(
     entry_points={
         'console_scripts':[
             'cloudbenchmark=cloudbenchmark.main:main',
-            'cloudbenchmark-manager=cloudbenchmark.deploy_manager:deploy_main'
+            'cloudbenchmark-manager=cloudbenchmark.deploy_manager:main'
         ]
     },
 )
