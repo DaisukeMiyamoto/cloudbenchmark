@@ -93,7 +93,7 @@ ec2-sysbench-memory-large:
     - d2.8xlarge
   job_size: flex
   job_type: ec2-sysbench-memory
-ec2-arm-unixbench:
+ec2-arm-unixbench-large:
   instance_type_list:
     - a1.medium
     - a1.large
@@ -103,3 +103,51 @@ ec2-arm-unixbench:
   job_size: flex
   ami_type: arm
   job_type: ec2-unixbench-cpu
+ec2-unixbench-small:
+  instance_type_list:
+    - t2.micro
+    - c5.large
+  job_size: flex
+  job_type: ec2-unixbench
+ec2-unixbench-large:
+  instance_type_list:
+    - t2.micro
+    - t2.medium
+    - t2.large
+    - t2.xlarge
+    - t2.2xlarge
+    - t3.micro
+    - t3.medium
+    - t3.large
+    - t3.2xlarge
+    - c3.large
+    - c3.2xlarge
+    - c3.8xlarge
+    - c4.large
+    - c4.2xlarge
+    - c4.8xlarge
+    - c5.large
+    - c5.2xlarge
+    - c5.18xlarge
+    - m3.2xlarge
+    - m4.large
+    - m4.2xlarge
+    - m4.16xlarge
+    - m5.large
+    - m5.2xlarge
+    - m5.24xlarge
+    - m5a.large
+    - m5a.2xlarge
+    - m5a.24xlarge
+    - r4.large
+    - r4.2xlarge
+    - r4.16xlarge
+    - r5.large
+    - r5.2xlarge
+    - r5.24xlarge
+    - r5a.large
+    - r5a.2xlarge
+    - r5a.24xlarge
+    - d2.8xlarge
+  job_size: flex
+  job_type: ec2-unixbench
