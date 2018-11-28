@@ -10,11 +10,11 @@ class BenchmarkRecorder:
     def __init__(self, col_names, add_metadata=True):
         metadata_col_names = ['instance_type', 'availability-zone', 'version', 'date', 'datetime']
         self.add_metadata = add_metadata
+        self.col_names = list(col_names)
         if add_metadata:
-            col_names.extend(metadata_col_names)
+            self.col_names.extend(metadata_col_names)
 
-        self.df = pd.DataFrame(columns=col_names)
-        self.col_names = col_names
+        self.df = pd.DataFrame(columns=self.col_names)
 
     def _get_metadata(self, key):
         response = requests.get('http://169.254.169.254/latest/meta-data/' + key)

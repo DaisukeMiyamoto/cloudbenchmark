@@ -18,6 +18,17 @@ ec2-sysbench-memory:
   small:
     num_threads: [1, 2]
     trial: [0]
+ec2-unixbench:
+  small:
+    trial: [0]
+    num_threads: [1]
+    iteration: 2
+    test_target: dhry2reg
+  large:
+    trial: [0]
+    num_threads: [1, HALF_MAX, MAX]
+    iteration: 10
+    test_target: all
 s3-throughput:
   large:
     file_size: [32, 64, 128, 256, 512, 1024, 2048, 4096]

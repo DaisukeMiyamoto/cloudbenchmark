@@ -28,10 +28,11 @@ class DeployManager():
         self.show_stack_events = True
         self.region = 'ap-northeast-1'
     
-    def run_remote_benchmark(self, instance_type, job_type, job_size):
+    def run_remote_benchmark(self, instance_type, job_type, job_size, ami_type='x86'):
         self.parameters = {
             'EC2InstanceType': instance_type,
             'KeyName': self.key_name,
+            'AMIType': ami_type,
             'OutputS3': self.output_bucket_name
         }
         self.benchmark_command = '/usr/local/bin/cloudbenchmark -j %s -s %s -b %s' % (
@@ -72,8 +73,8 @@ def deploy_core(args):
     deploymanager = DeployManager(args['key_name'], args['local_key_path'], args['output_bucket_name'])
     deploymanager.show_stack_events = False
     deploymanager.region = args['region']
-    print('Benchmarking: %s [%s %s]' % (args['instance_type'], args['job_type'], args['job_size']))
-    deploymanager.run_remote_benchmark(args['instance_type'], args['job_type'], args['job_size'])
+    print('Benchmarking: %s [%s %s %s]' % (args['instance_type'], args['job_type'], args['job_size'], args['ami_type']))
+    deploymanager.run_remote_benchmark(args['instance_type'], args['job_type'], args['job_size'], args['ami_type'])
 
 
 def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2'):
@@ -86,12 +87,17 @@ def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2'):
     keypairmanager.store_key(local_key_path)
     test_set = test_set_list[test_set_name]
 
+    # prepare parameter list for multi processing
     deploy_list = []
     for instance_type in test_set['instance_type_list']:
+        if not 'ami_type' in test_set:
+            test_set['ami_type'] = 'x86'
+
         deploy = {
             'instance_type': instance_type,
             'job_type': test_set['job_type'],
             'job_size': test_set['job_size'],
+            'ami_type': test_set['ami_type'],
             'key_name': key_name,
             'local_key_path': local_key_path,
             'output_bucket_name': bucket,
@@ -99,10 +105,12 @@ def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2'):
         }
         deploy_list.append(deploy)
 
+    # run deploy
     pool = multiprocessing.Pool(multi)
     pool.map(deploy_core, deploy_list)
     pool.close()
     
+    # clean up
     keypairmanager.delete_key_pair()
     os.remove(local_key_path)
 

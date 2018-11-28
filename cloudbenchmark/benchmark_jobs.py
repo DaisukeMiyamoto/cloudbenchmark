@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 import datetime
 import json
 from tqdm import tqdm
 import subprocess
 import multiprocessing
+import pandas as pd
 from cloudbenchmark import s3benchmark
 from cloudbenchmark import benchmarkrecorder
+from cloudbenchmark import utils
 
 
 def convert_process_num(num):
@@ -173,5 +176,64 @@ def ec2_sysbench_memory(condition_pattern, debug=False):
 
         if debug:
             print('Memory score %f' % score)
+
+    return recorder
+
+
+def ec2_unixbench(condition_pattern, debug=False):
+    unixbench_path = 'byte-unixbench/UnixBench/'
+    unixbench_result_file = 'unixbench_result_' + utils.get_random_str(5)
+    
+    condition_list = []
+    for num_threads in condition_pattern['num_threads']:
+        for trial in condition_pattern['trial']:
+            condition = {
+                'trial': trial,
+                'num_threads': convert_process_num(num_threads),
+                'iteration': condition_pattern['iteration'],
+                'test_target': condition_pattern['test_target']
+            }
+            condition_list.append(condition)
+
+    results = []
+    for condition in tqdm(condition_list):
+        try:
+            command = 'export UB_OUTPUT_CSV=true; export UB_OUTPUT_FILE_NAME=%s; cd %s; ./Run -c %d -i %d %s' % (unixbench_result_file, unixbench_path, condition['num_threads'], condition['iteration'], condition['test_target'])
+            if debug:
+                print(command)
+            output = subprocess.check_output(command, shell=True)
+            
+        except subprocess.CalledProcessError as e:
+            print('Error: UnixBench is required')
+            print(e.cmd)
+            print(e.output)
+            return False
+
+        output_lines = output.decode().split('\n')
+        df = pd.read_csv(unixbench_path + 'results/' + unixbench_result_file + '.csv')
+
+        results.append(df)
+
+    column_name_list = [
+        'trial',
+        'num_threads',
+        'iteration',
+    ]
+    for column_name in results[0]:
+        column_name_list.append(column_name)
+
+    recorder = benchmarkrecorder.BenchmarkRecorder(column_name_list)
+
+    for i, df in enumerate(results):
+        result = [
+            condition_list[i]['trial'],
+            condition_list[i]['num_threads'],
+            condition_list[i]['iteration'],
+        ]
+        for column_name in column_name_list[3:]:
+            for data in df[column_name]:
+                result.append(data)
+
+        recorder.add_record(result)
 
     return recorder

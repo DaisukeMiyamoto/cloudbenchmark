@@ -12,6 +12,10 @@ Parameters:
     Type: String
     Default: "t2.micro"
     Description: "Instance Type"
+  AMIType:
+    Type: String
+    Default: "x86"
+    Description: "x86 or arm"
   OutputS3:
     Type: String
     Description: "output target S3 bucket"
@@ -30,9 +34,9 @@ Resources:
   EC2Instance: 
     Type: AWS::EC2::Instance
     Properties: 
-      ImageId: !FindInMap [AmazonLinux2AMI, !Ref "AWS::Region", "x86"]
+      ImageId: !FindInMap [AmazonLinux2AMI, !Ref "AWS::Region", !Ref "AMIType"]
       InstanceType: !Ref EC2InstanceType
-      KeyName: !Ref "KeyName"
+      KeyName: !Ref KeyName
       SecurityGroups:
       - !Ref SSHSecurityGroup
       IamInstanceProfile: !Ref EC2Profile

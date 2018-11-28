@@ -23,6 +23,8 @@ def job_executer(job, size, bucket, name, options, debug=False):
         result = benchmark_jobs.ec2_sysbench_cpu(condition_patterns[job][size], debug=debug)
     elif 'ec2-sysbench-memory' in job:
         result = benchmark_jobs.ec2_sysbench_memory(condition_patterns[job][size], debug=debug)
+    elif 'ec2-unixbench' in job:
+        result = benchmark_jobs.ec2_unixbench(condition_patterns[job][size], debug=debug)
     else:
         print('Error: invalid job')
         return False

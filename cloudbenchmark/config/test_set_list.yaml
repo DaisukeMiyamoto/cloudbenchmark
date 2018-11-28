@@ -93,3 +93,13 @@ ec2-sysbench-memory-large:
     - d2.8xlarge
   job_size: flex
   job_type: ec2-sysbench-memory
+ec2-arm-unixbench:
+  instance_type_list:
+    - a1.medium
+    - a1.large
+    - a1.xlarge
+    - a1.2xlarge
+    - a2.4xlarge
+  job_size: flex
+  ami_type: arm
+  job_type: ec2-unixbench-cpu
