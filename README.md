@@ -1,28 +1,30 @@
-cloudbenchmark
+# cloudbenchmark
 ---
 
 Benchmark suite for cloud environment
 
-# Supported benchmark targets
+## Supported benchmark targets
 
-- Amazon EC2: CPU, memory
-- Amazon S3: throughput
+- Amazon EC2
+  - sysbench: CPU, memory
+- Amazon S3
+  - throughput
 
-# Prepare
+
+## Prepare
 
 - install ansible
 - install sysbench
 - set up aws credentials
 
-# Install
+## Install
 
 ```
 $ sudo pip3 install cloudbenchmark
 ```
 
-# Usage
+## Usage: local mode
 
-## local mode
 
 ```
 $ cloudbenchmark -j [JOB_TYPE] -s [JOB_SIZE] -b [RESULT_BUCKET]
@@ -41,10 +43,10 @@ $ cloudbenchmark -j [JOB_TYPE] -s [JOB_SIZE] -b [RESULT_BUCKET]
 - `large`
 - `flex`
 
-## remote mode
+## Usage: remote (CloudFormation) mode
 
 ```
-$ cloudbenchmark-manager -t [TEST-SET]
+$ cloudbenchmark-manager -t [TEST_SET] -m [CONCURRENT_NUMBER]
 ```
 
 ### test set
@@ -54,32 +56,57 @@ $ cloudbenchmark-manager -t [TEST-SET]
 - `ec2-sysbench-cpu-large`
 - `ec2-sysbench-memory-large`
 
-### large set instances
+### instance list on large test set
 
+- t2.micro
+- t2.medium
 - t2.large
+- t2.xlarge
 - t2.2xlarge
+- t3.micro
+- t3.medium
 - t3.large
 - t3.2xlarge
 - c3.large
+- c3.2xlarge
 - c3.8xlarge
 - c4.large
+- c4.2xlarge
 - c4.8xlarge
 - c5.large
+- c5.2xlarge
 - c5.18xlarge
 - m3.2xlarge
 - m4.large
+- m4.2xlarge
 - m4.16xlarge
 - m5.large
+- m5.2xlarge
 - m5.24xlarge
+- m5a.large
+- m5a.2xlarge
+- m5a.24xlarge
 - r4.large
+- r4.2xlarge
 - r4.16xlarge
 - r5.large
+- r5.2xlarge
 - r5.24xlarge
+- r5a.large
+- r5a.2xlarge
+- r5a.24xlarge
+- d2.8xlarge
 
-# Test
+## Test
 
 ```
 $ python3 setup.py test
 ```
 
-# Acknowledgement
+## Acknowledgement
+
+- sysbench: https://github.com/akopytov/sysbench
+- UnixBench: https://github.com/kdlucas/byte-unixbench
+- HimenoBench
+- STREAM
+- fio

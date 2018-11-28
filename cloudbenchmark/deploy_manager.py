@@ -1,6 +1,5 @@
 # coding: utf-8
 
-import boto3
 import json
 import os
 import sys
@@ -14,6 +13,7 @@ import cloudbenchmark
 from cloudbenchmark import utils
 from cloudbenchmark.cloudformation_manager import CloudFormationManager
 from cloudbenchmark.ansible_manager import AnsibleManager
+from cloudbenchmark.keypair_manager import KeyPairManager
 
 
 class DeployManager():
@@ -26,7 +26,7 @@ class DeployManager():
         self.ping_retry = 0
         self.ping_retry_max = 5
         self.show_stack_events = True
-        self.cfn_region = 'ap-northeast-1'
+        self.region = 'ap-northeast-1'
     
     def run_remote_benchmark(self, instance_type, job_type, job_size):
         self.parameters = {
@@ -47,7 +47,7 @@ class DeployManager():
                 random_stack_name=True,
                 wait=True,
                 show_stack_events=self.show_stack_events,
-                region=self.cfn_region
+                region=self.region
             )
             target_ip = cfnmanager.get_output('PublicIP')
             time.sleep(5)
@@ -76,20 +76,15 @@ def deploy_core(args):
     deploymanager.run_remote_benchmark(args['instance_type'], args['job_type'], args['job_size'])
 
 
-def main():
-    print('Cloud Benchmark Manager')
-    test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'))
-    parser = argparse.ArgumentParser(description='Cloud Benchmark Suite.')
-    parser.add_argument('-t', '--test-set', dest='test_set', choices=test_set_list.keys(), help='test set name', required=True)
-    parser.add_argument('-m', '--multi-process', dest='multi', help='use multi process', default=1)
-    parser.add_argument('-r', '--region', dest='region', help='AWS region', default='us-west-2')
-    args = parser.parse_args()
+def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2'):
 
-    # TODO: auto generate key-pair
-    key_name = 'aws-daisuke-tokyo'
-    local_key_path = '~/.ssh/aws-daisuke-tokyo.pem'
-    output_bucket_name = 'midaisuk-benchmarks'
-    test_set = test_set_list[args.test_set]
+    test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'))
+    key_name = 'cloudbenchmark_key_' + utils.get_random_str(10) + '.tmp'
+    local_key_path = key_name
+    keypairmanager = KeyPairManager(key_name, region)
+    keypairmanager.create_key_pair()
+    keypairmanager.store_key(local_key_path)
+    test_set = test_set_list[test_set_name]
 
     deploy_list = []
     for instance_type in test_set['instance_type_list']:
@@ -99,14 +94,31 @@ def main():
             'job_size': test_set['job_size'],
             'key_name': key_name,
             'local_key_path': local_key_path,
-            'output_bucket_name': output_bucket_name,
-            'region': args.region
+            'output_bucket_name': bucket,
+            'region': region
         }
         deploy_list.append(deploy)
 
-    pool = multiprocessing.Pool(int(args.multi))
+    pool = multiprocessing.Pool(multi)
     pool.map(deploy_core, deploy_list)
     pool.close()
+    
+    keypairmanager.delete_key_pair()
+    os.remove(local_key_path)
 
+
+def main():
+    print('Cloud Benchmark Manager')
+    test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'))
+    parser = argparse.ArgumentParser(description='Cloud Benchmark Suite.')
+    parser.add_argument('-t', '--test-set', dest='test_set', choices=test_set_list.keys(), help='test set name', required=True)
+    parser.add_argument('-m', '--multi-process', dest='multi', help='use multi process', default=1)
+    parser.add_argument('-r', '--region', dest='region', help='AWS region', default='us-west-2')
+    parser.add_argument('-b', '--bucket', dest='bucket', help='S3 bucket to store result files', required=True)
+    args = parser.parse_args()
+
+    deploy_multi(args.test_set, args.bucket, int(args.multi), args.region)
+    
+    
 if __name__=='__main__':
     main()

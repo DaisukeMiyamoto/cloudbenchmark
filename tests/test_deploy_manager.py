@@ -13,6 +13,7 @@ def test_deploy(instance_type='t2.micro'):
         'job_size': 'small',
         'key_name': 'aws-daisuke-tokyo',
         'local_key_path': '~/.ssh/aws-daisuke-tokyo.pem',
-        'output_bucket_name': 'midaisuk-benchmarks'
+        'output_bucket_name': 'midaisuk-benchmarks',
+        'region': 'ap-northeast-1'
     }
     deploy_core(deploy)
