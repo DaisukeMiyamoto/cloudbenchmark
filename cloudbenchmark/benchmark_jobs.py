@@ -184,10 +184,6 @@ def ec2_unixbench(condition_pattern, debug=False):
     unixbench_path = 'byte-unixbench/UnixBench/'
     unixbench_result_file = 'unixbench_result_' + utils.get_random_str(5)
     # test_target = condition['test_target']
-    if condition['test_target'] == 'index':
-        test_target = ''
-    else:
-        test_target = condition['test_target']
     
     condition_list = []
     for num_threads in condition_pattern['num_threads']:
@@ -198,12 +194,17 @@ def ec2_unixbench(condition_pattern, debug=False):
                 'iteration': condition_pattern['iteration'],
                 'test_target': condition_pattern['test_target']
             }
+            if condition['test_target'] == 'index':
+                test_target = ''
+            else:
+                test_target = condition['test_target']
+
             condition_list.append(condition)
 
     results = []
     for condition in tqdm(condition_list):
         try:
-            command = 'export UB_OUTPUT_CSV=true; export UB_OUTPUT_FILE_NAME=%s; cd %s; ./Run -c %d -i %d %s' % (unixbench_result_file, unixbench_path, condition['num_threads'], condition['iteration'], test_target)
+            command = 'export UB_OUTPUT_CSV=true; export UB_OUTPUT_FILE_NAME=%s; cd %s; ./Run -c %d -i %d %s' % (unixbench_result_file, unixbench_path, condition['num_threads'], condition['iteration'], condition['test_target'])
             if debug:
                 print(command)
             output = subprocess.check_output(command, shell=True)
