@@ -1,8 +1,8 @@
 ---
 - hosts: all
-  become: yes
   tasks:
   - name: install base software
+    become: yes
     yum:
       name:
         - git
@@ -15,16 +15,18 @@
       state: latest
 
   - name: update
+    become: yes
     yum:
       name: '*'
       state: latest
 
   - name: install unixbench
     git:
-      repo: git@github.com:kdlucas/byte-unixbench.git
-      dest: /home/ec2-user
+      repo: https://github.com/kdlucas/byte-unixbench.git
+      dest: /home/ec2-user/byte-unixbench
 
   - name: install benchmark software
+    become: yes
     yum:
       name:
         - sysbench
@@ -32,6 +34,7 @@
       enablerepo: epel
 
   - name: install cloudbenchmark
+    become: yes
     pip:
       name:
         - cloudbenchmark

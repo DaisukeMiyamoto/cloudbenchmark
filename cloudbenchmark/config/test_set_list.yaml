@@ -107,7 +107,7 @@ ec2-unixbench-small:
   instance_type_list:
     - t2.micro
     - c5.large
-  job_size: flex
+  job_size: small
   job_type: ec2-unixbench
 ec2-unixbench-large:
   instance_type_list:

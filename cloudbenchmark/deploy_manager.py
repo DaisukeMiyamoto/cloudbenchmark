@@ -27,6 +27,7 @@ class DeployManager():
         self.ping_retry_max = 5
         self.show_stack_events = True
         self.region = 'ap-northeast-1'
+        self.debug = False
     
     def run_remote_benchmark(self, instance_type, job_type, job_size, ami_type='x86'):
         self.parameters = {
@@ -60,8 +61,12 @@ class DeployManager():
                 print('Warning: ping retry')
                 time.sleep(5)
                 
-            ansiblemanager.run_playbook(playbook_filename=self.playbook_filename)
-            ansiblemanager.run_command(self.benchmark_command)
+            install_result = ansiblemanager.run_playbook(playbook_filename=self.playbook_filename)
+            if self.debug:
+                print(install_result)
+            command_result = ansiblemanager.run_command(self.benchmark_command)
+            if self.debug:
+                print(command_result)
     
         except Exception as e:
             print(e)
@@ -73,11 +78,14 @@ def deploy_core(args):
     deploymanager = DeployManager(args['key_name'], args['local_key_path'], args['output_bucket_name'])
     deploymanager.show_stack_events = False
     deploymanager.region = args['region']
+    if args['debug']:
+        deploymanager.debug = True
+
     print('Benchmarking: %s [%s %s %s]' % (args['instance_type'], args['job_type'], args['job_size'], args['ami_type']))
     deploymanager.run_remote_benchmark(args['instance_type'], args['job_type'], args['job_size'], args['ami_type'])
 
 
-def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2'):
+def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2', debug=False):
 
     test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'))
     key_name = 'cloudbenchmark_key_' + utils.get_random_str(10) + '.tmp'
@@ -101,7 +109,8 @@ def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2'):
             'key_name': key_name,
             'local_key_path': local_key_path,
             'output_bucket_name': bucket,
-            'region': region
+            'region': region,
+            'debug': debug
         }
         deploy_list.append(deploy)
 
@@ -123,9 +132,10 @@ def main():
     parser.add_argument('-m', '--multi-process', dest='multi', help='use multi process', default=1)
     parser.add_argument('-r', '--region', dest='region', help='AWS region', default='us-west-2')
     parser.add_argument('-b', '--bucket', dest='bucket', help='S3 bucket to store result files', required=True)
+    parser.add_argument('-d', '--debug', dest='debug', action='store_true', help='show debug info')
     args = parser.parse_args()
 
-    deploy_multi(args.test_set, args.bucket, int(args.multi), args.region)
+    deploy_multi(args.test_set, args.bucket, int(args.multi), args.region, args.debug)
     
     
 if __name__=='__main__':

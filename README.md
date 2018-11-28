@@ -46,7 +46,7 @@ $ cloudbenchmark -j [JOB_TYPE] -s [JOB_SIZE] -b [RESULT_BUCKET]
 ## Usage: remote (CloudFormation) mode
 
 ```
-$ cloudbenchmark-manager -t [TEST_SET] -m [CONCURRENT_NUMBER]
+$ cloudbenchmark-manager -t [TEST_SET] -m [CONCURRENT_NUMBER] -b [RESULT_BUCKET]
 ```
 
 ### test set

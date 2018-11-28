@@ -27,13 +27,13 @@ ec2-unixbench:
   flex:
     trial: [0]
     num_threads: [1, HALF_MAX, MAX]
-    iteration: 10
-    test_target: all
+    iteration: 5
+    test_target: index
   large:
     trial: [0]
     num_threads: [1, 2, 4]
-    iteration: 10
-    test_target: all
+    iteration: 5
+    test_target: index
 s3-throughput:
   large:
     file_size: [32, 64, 128, 256, 512, 1024, 2048, 4096]
