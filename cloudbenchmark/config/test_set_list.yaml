@@ -99,10 +99,10 @@ ec2-arm-unixbench-large:
     - a1.large
     - a1.xlarge
     - a1.2xlarge
-    - a2.4xlarge
+    - a1.4xlarge
   job_size: flex
   ami_type: arm
-  job_type: ec2-unixbench-cpu
+  job_type: ec2-unixbench
 ec2-unixbench-small:
   instance_type_list:
     - t2.micro
@@ -149,5 +149,40 @@ ec2-unixbench-large:
     - r5a.2xlarge
     - r5a.24xlarge
     - d2.8xlarge
+  job_size: flex
+  job_type: ec2-unixbench
+ec2-unixbench-append:
+  instance_type_list:
+    - c3.xlarge
+    - c3.4xlarge
+    - c4.xlarge
+    - c4.4xlarge
+    - c5.xlarge
+    - c5.4xlarge
+    - c5.9xlarge
+    - m3.large
+    - m3.xlarge
+    - m4.xlarge
+    - m4.4xlarge
+    - m4.10xlarge
+    - m5.xlarge
+    - m5.4xlarge
+    - m5.12xlarge
+    - m5a.xlarge
+    - m5a.4xlarge
+    - m5a.12xlarge
+    - r4.xlarge
+    - r4.4xlarge
+    - r4.8xlarge
+    - r5.xlarge
+    - r5.4xlarge
+    - r5.12xlarge
+    - r5a.xlarge
+    - r5a.4xlarge
+    - r5a.12xlarge
+    - d2.2xlarge
+    - d2.4xlarge
+    - i3.16xlarge
+    - h1.16xlarge
   job_size: flex
   job_type: ec2-unixbench

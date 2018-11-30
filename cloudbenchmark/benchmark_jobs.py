@@ -183,8 +183,7 @@ def ec2_sysbench_memory(condition_pattern, debug=False):
 def ec2_unixbench(condition_pattern, debug=False):
     unixbench_path = 'byte-unixbench/UnixBench/'
     unixbench_result_file = 'unixbench_result_' + utils.get_random_str(5)
-    # test_target = condition['test_target']
-    
+
     condition_list = []
     for num_threads in condition_pattern['num_threads']:
         for trial in condition_pattern['trial']:

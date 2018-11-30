@@ -11,6 +11,10 @@
         - perl-Time-HiRes
         - make
         - gcc
+        - gcc-c++
+        - gcc-gfortran
+        - libgfortran
+        - python3-devel
         - https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
       state: latest
 
@@ -32,6 +36,7 @@
         - sysbench
       state: latest
       enablerepo: epel
+    ignore_errors: yes
 
   - name: install cloudbenchmark
     become: yes
