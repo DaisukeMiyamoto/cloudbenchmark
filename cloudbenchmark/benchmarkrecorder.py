@@ -19,7 +19,7 @@ class BenchmarkRecorder:
     def _get_metadata(self, key):
         text = ''
         try:
-            response = requests.get('http://169.254.169.254/latest/meta-data/' + key)
+            response = requests.get('http://169.254.169.254/latest/meta-data/' + key, timeout=0.4)
             text = response.text
         except  requests.exceptions.RequestException as err:
             text = 'None'

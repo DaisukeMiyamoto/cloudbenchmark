@@ -5,7 +5,7 @@ from cloudbenchmark.main import job_executer
 
 def test_s3_throughput_small():
     options = dict()
-    options['target_s3'] = 'midaisuk-s3-test'
+    options['target-s3'] = 'midaisuk-s3-test'
     job_executer('s3-throughput', 'small', None, 'test_job', options)
 
 
