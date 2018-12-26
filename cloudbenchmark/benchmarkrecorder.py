@@ -17,8 +17,14 @@ class BenchmarkRecorder:
         self.df = pd.DataFrame(columns=self.col_names)
 
     def _get_metadata(self, key):
-        response = requests.get('http://169.254.169.254/latest/meta-data/' + key)
-        return response.text
+        text = ''
+        try:
+            response = requests.get('http://169.254.169.254/latest/meta-data/' + key)
+            text = response.text
+        except  requests.exceptions.RequestException as err:
+            text = 'None'
+        
+        return text
         
     def _get_metadata_record(self):
         metadata = [
