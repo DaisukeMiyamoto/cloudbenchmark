@@ -47,7 +47,7 @@ def main():
     parser.add_argument('-b', '--bucket', dest='bucket', help='S3 bucket to store result files')
     parser.add_argument('-n', '--name', dest='name', default=default_job_name, help='job name')
     parser.add_argument('-d', '--debug', dest='debug', action='store_true', help='show debug info')
-    parser.add_argument('--target-s3', dest='target_s3', help='S3 bucket for benchmark target')
+    parser.add_argument('--target-s3', dest='target-s3', help='S3 bucket for benchmark target')
 
     args = parser.parse_args()
     
