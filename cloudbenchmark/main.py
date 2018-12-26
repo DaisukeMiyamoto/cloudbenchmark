@@ -18,7 +18,7 @@ def job_executer(job, size, bucket, name, options, debug=False):
     condition_patterns = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/condition_patterns.yaml'))
     result = None
     if 's3-throughput' in job:
-        result = benchmark_jobs.s3_throughput(options['target_s3'], condition_patterns[job][size], debug=debug)
+        result = benchmark_jobs.s3_throughput(options['target-s3'], condition_patterns[job][size], debug=debug)
     elif 'ec2-sysbench-cpu' in job:
         result = benchmark_jobs.ec2_sysbench_cpu(condition_patterns[job][size], debug=debug)
     elif 'ec2-sysbench-memory' in job:
