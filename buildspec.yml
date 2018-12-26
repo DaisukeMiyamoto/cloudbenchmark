@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - python3 setup.py install
+  pre_build:
+    commands:
+      - python3 setup.py test
+
+artifacts:
+  type: zip
+  files:
+    - 'template.yml'
+    - 'cloudbenchmark/*.py'
+    - 'cloudbenchmark/playbook/*.yaml'
+    - 'cloudbenchmark/template/*.yaml'
+    - 'cloudbenchmark/config/*.yaml'
+    - 'setup.py'
