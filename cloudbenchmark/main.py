@@ -54,7 +54,7 @@ def main():
     options = dict()
     if 's3-' in args.job:
         if args.target_s3:
-            options['target-s3'] = args.target_s3
+            options['target-s3'] = args.target-s3
         else:
             print('Error: use --target-s3 option')
             return False
