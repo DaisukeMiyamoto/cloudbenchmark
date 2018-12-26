@@ -1,5 +1,6 @@
 # cloudbenchmark
 
+![badge](https://codebuild.ap-northeast-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiend3MnZvR1NEcEwwNnp5dXg5T3ZsRUVVRFNTcUJWb2hOaTd2WDNtLzNPT0dtaXpmOVNiV2UzYmV3WXZHK0UxMEFEQnJxcUJkaTBaWkZXSHZMS3BhbGtBPSIsIml2UGFyYW1ldGVyU3BlYyI6Ik1EdmF5V0x0RmEwckppZXEiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 
 Benchmark suite for cloud environment
 
