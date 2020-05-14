@@ -74,5 +74,5 @@ condition_patterns = {
 
 f = open('config/condition_patterns.yaml', 'r')
 text = f.read()
-data = yaml.load(text)
+data = yaml.load(text, Loader=yaml.SafeLoader)
 pprint.pprint(data)

@@ -38,6 +38,20 @@
       enablerepo: epel
     ignore_errors: yes
 
+  - name: install numpy
+    become: yes
+    pip:
+      name:
+        - cython
+      executable: pip3
+
+  - name: install numpy
+    become: yes
+    pip:
+      name:
+        - numpy
+      executable: pip3
+      
   - name: install cloudbenchmark
     become: yes
     pip:

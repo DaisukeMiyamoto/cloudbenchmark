@@ -12,7 +12,7 @@ from cloudbenchmark import utils
 
 
 class CloudFormationManager():
-    def __init__(self, template_filename, parameters, stack_name='CloudBenchmarkStack', region='ap-northeast-1', random_stack_name=False, wait=False, show_stack_events=False):
+    def __init__(self, template_filename, parameters, stack_name='CloudBenchmarkStack', region='us-east-1', random_stack_name=False, wait=False, show_stack_events=False):
         self.cfn_client = boto3.client('cloudformation', region_name=region)
         self.stack_name = stack_name
         if random_stack_name:

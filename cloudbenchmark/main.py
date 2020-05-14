@@ -39,7 +39,7 @@ def main():
     print('Cloud Benchmark')
     job_size = ['small', 'large', 'flex']
     default_job_name = str(datetime.date.today())+'-'+utils.get_random_str(10)
-    condition_patterns = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/condition_patterns.yaml'))
+    condition_patterns = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/condition_patterns.yaml'), Loader=yaml.SafeLoader)
 
     parser = argparse.ArgumentParser(description='Cloud Benchmark Suite.')
     parser.add_argument('-j', '--job', dest='job', choices=condition_patterns.keys(), help='job type', required=True)

@@ -10,7 +10,7 @@ if os.path.exists('README.txt'):
 
 setup(
     name='cloudbenchmark',
-    version='0.3.2',
+    version='0.4.0',
     packages=['cloudbenchmark'],
     package_dir={'cloudbenchmark': 'cloudbenchmark'},
     package_data={'cloudbenchmark': ['template/*.yaml', 'playbook/*.yaml', 'config/*.yaml']},
@@ -20,7 +20,7 @@ setup(
     author_email='midaisuk@gmail.com',
     url='https://github.com/DaisukeMiyamoto/cloudbenchmark',
     setup_requires=['pytest-runner'],
-    install_requires=['boto3', 'numpy', 'tqdm', 'pandas', 'requests', 'blessings', 'pyyaml'],
+    install_requires=['boto3', 'numpy', 'tqdm', 'pandas', 'requests', 'blessings', 'pyyaml', 'cython'],
     tests_require=['pytest'],
     keywords=['aws', 'cloud', 'benchmark', 'performance', 'flops'],
     classifiers=[

@@ -87,7 +87,7 @@ def deploy_core(args):
 
 def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2', debug=False):
 
-    test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'))
+    test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'), Loader=yaml.SafeLoader)
     key_name = 'cloudbenchmark_key_' + utils.get_random_str(10) + '.tmp'
     local_key_path = key_name
     keypairmanager = KeyPairManager(key_name, region)
@@ -126,11 +126,11 @@ def deploy_multi(test_set_name, bucket, multi=1, region='us-west-2', debug=False
 
 def main():
     print('Cloud Benchmark Manager')
-    test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'))
+    test_set_list = yaml.load(pkgutil.get_data('cloudbenchmark', 'config/test_set_list.yaml'), Loader=yaml.SafeLoader)
     parser = argparse.ArgumentParser(description='Cloud Benchmark Suite.')
     parser.add_argument('-t', '--test-set', dest='test_set', choices=test_set_list.keys(), help='test set name', required=True)
     parser.add_argument('-m', '--multi-process', dest='multi', help='use multi process', default=1)
-    parser.add_argument('-r', '--region', dest='region', help='AWS region', default='us-west-2')
+    parser.add_argument('-r', '--region', dest='region', help='AWS region', default='us-east-1')
     parser.add_argument('-b', '--bucket', dest='bucket', help='S3 bucket to store result files', required=True)
     parser.add_argument('-d', '--debug', dest='debug', action='store_true', help='show debug info')
     args = parser.parse_args()

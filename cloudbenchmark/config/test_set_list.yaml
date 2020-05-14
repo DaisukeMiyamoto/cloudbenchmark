@@ -186,3 +186,22 @@ ec2-unixbench-append:
     - h1.16xlarge
   job_size: flex
   job_type: ec2-unixbench
+ec2-unixbench-m6g-small:
+  instance_type_list:
+    - m6g.medium
+  job_size: flex
+  ami_type: arm
+  job_type: ec2-unixbench
+ec2-unixbench-m6g:
+  instance_type_list:
+    - m6g.medium
+    - m6g.large
+    - m6g.xlarge
+    - m6g.2xlarge
+    - m6g.4xlarge
+    - m6g.8xlarge
+    - m6g.12xlarge
+    - m6g.16xlarge
+  job_size: flex
+  ami_type: arm
+  job_type: ec2-unixbench
